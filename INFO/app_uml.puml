@@ -1,0 +1,92 @@
+@startuml
+class com.example.App.service.security.AppUserDetailsService {
+- UserRepository userRepository
++ UserDetails loadUserByUsername(String)
+- Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role>)
+}
+
+
+class com.example.App.entity.Role {
+- Long id
+- String name
+- List<User> users
+}
+
+class com.example.App.service.user.UserServiceImpl {
+- UserRepository userRepository
+- RoleRepository roleRepository
+- PasswordEncoder passwordEncoder
++ void saveUser(UserDto)
++ User findByEmail(String)
++ List<UserDto> findAllUsers()
+- UserDto convertEntityToDto(User)
+- Role checkRoleExist()
+}
+
+
+class com.example.App.dto.UserDto {
+- Long id
+- String firstName
+- String lastName
+- String email
+- String password
+}
+
+class com.example.App.config.ServletInitializer {
+# SpringApplicationBuilder configure(SpringApplicationBuilder)
+}
+
+interface com.example.App.service.user.UserService {
+~ void saveUser(UserDto)
+~ User findByEmail(String)
+~ List<UserDto> findAllUsers()
+}
+
+class com.example.App.controller.AuthController {
+- UserService userService
++ String home(Model)
++ String loginForm(Model)
++ String showRegistrationForm(Model)
++ String registration(UserDto,BindingResult,Model)
++ String listRegisteredUsers(Model)
+}
+
+
+interface com.example.App.repository.RoleRepository {
+~ Role findByName(String)
+}
+
+class com.example.App.entity.User {
+- {static} long serialVersionUID
+- Long id
+- String name
+- String email
+- String password
+- List<Role> roles
+}
+
+class com.example.App.SpringSecurityApplication {
++ {static} void main(String[])
+}
+
+interface com.example.App.repository.UserRepository {
+~ User findByEmail(String)
+}
+
+class com.example.App.config.AppSecurity {
+- UserDetailsService userDetailsService
++ {static} PasswordEncoder passwordEncoder()
++ SecurityFilterChain filterChain(HttpSecurity)
++ void configureGlobal(AuthenticationManagerBuilder)
+}
+
+
+
+
+org.springframework.security.core.userdetails.UserDetailsService <|.. com.example.App.service.security.AppUserDetailsService
+com.example.App.service.user.UserService <|.. com.example.App.service.user.UserServiceImpl
+org.springframework.boot.web.servlet.support.SpringBootServletInitializer <|-- com.example.App.config.ServletInitializer
+org.springframework.data.jpa.repository.JpaRepository <|-- com.example.App.repository.RoleRepository
+java.io.Serializable <|.. com.example.App.entity.User
+org.springframework.data.jpa.repository.JpaRepository <|-- com.example.App.repository.UserRepository
+@enduml
